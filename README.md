@@ -1,10 +1,10 @@
 # 📱 GRUPO 4
 
-Bienvenidos al repositorio oficial del **GRUPO 6** de la cátedra de **Dispositivos Móviles**.
+Bienvenidos al repositorio oficial del **GRUPO 4** de la cátedra de **Dispositivos Móviles**.
 Aquí recopilamos todas las actividades, prácticas y proyectos desarrollados durante el semestre.
 Nuestro objetivo es fortalecer el aprendizaje colaborativo y aplicar los principios del desarrollo móvil moderno.
 
-## 🧩 Integrantes del Grupo 6
+## 🧩 Integrantes del Grupo 4
 
 | Nombre                 | GitHub                                          |
 | ---------------------- | ----------------------------------------------- |
@@ -35,5 +35,5 @@ Este proyecto está bajo la licencia **Apache License 2.0**.
 Puedes consultar los términos en el archivo [`LICENSE`](./LICENSE).
 
 📅 **Última actualización:** 14 de noviembre de 2025
-👨‍💻 **Repositorio principal:** [GRUPO6](https://github.com/25-26-DM/GRUPO6)
+👨‍💻 **Repositorio principal:** [GRUPO6](https://github.com/25-26-DM/GRUPO4)
 
