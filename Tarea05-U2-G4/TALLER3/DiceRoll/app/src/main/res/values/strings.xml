@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dice Roller</string>
+    <string name="roll">Roll</string>
+
+    <string name="dice_one">One</string>
+    <string name="dice_two">Two</string>
+    <string name="dice_three">Three</string>
+    <string name="dice_four">Four</string>
+    <string name="dice_five">Five</string>
+    <string name="dice_six">Six</string>
+
+    <string name="change_language">Change language</string>
+    <string name="english">English</string>
+    <string name="french">French</string>
+    <string name="spanish">Spanish</string>
+
+</resources>
+

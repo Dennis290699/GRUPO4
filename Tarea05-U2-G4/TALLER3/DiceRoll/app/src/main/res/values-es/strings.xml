@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lanzador de Dado</string>
+    <string name="roll">Lanzar</string>
+
+    <string name="dice_one">Uno</string>
+    <string name="dice_two">Dos</string>
+    <string name="dice_three">Tres</string>
+    <string name="dice_four">Cuatro</string>
+    <string name="dice_five">Cinco</string>
+    <string name="dice_six">Seis</string>
+
+    <string name="change_language">Cambiar idioma</string>
+    <string name="english">Inglés</string>
+    <string name="french">Francés</string>
+    <string name="spanish">Español</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lanceur de Dé</string>
+    <string name="roll">Lancer</string>
+
+    <string name="dice_one">Un</string>
+    <string name="dice_two">Deux</string>
+    <string name="dice_three">Trois</string>
+    <string name="dice_four">Quatre</string>
+    <string name="dice_five">Cinq</string>
+    <string name="dice_six">Six</string>
+
+
+    <string name="change_language">Changer la langue</string>
+    <string name="english">Anglais</string>
+    <string name="french">Français</string>
+    <string name="spanish">Espagnol</string>
+</resources>
