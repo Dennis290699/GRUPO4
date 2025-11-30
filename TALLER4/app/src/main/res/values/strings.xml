@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">Galletas</string>
+    <string name="order_cupcakes">Ordenar galletas</string>
+    <string name="one_cupcake">Una galleta</string>
+    <string name="six_cupcakes">Seis galletas</string>
+    <string name="twelve_cupcakes">Doce galletas</string>
+
+    <string name="choose_flavor">Elige el sabor</string>
+
+    <string name="vanilla">Vainilla con chispas</string>
+    <string name="chocolate">Chips de chocolate</string>
+    <string name="red_velvet">Doble chocolate</string>
+    <string name="salted_caramel">Avena y pasas</string>
+    <string name="coffee">Galleta de mantequilla</string>
+    <string name="special_flavor">Edición especial</string>
+
+
+    <string name="cancel">Cancelar</string>
+    <string name="next">Siguiente</string>
+
+    <string name="choose_pickup_date">Elige la fecha de retiro</string>
+    <string name="order_summary">Resumen del pedido</string>
+    <string name="send">Enviar pedido a otra app</string>
+
+    <string name="quantity">Cantidad</string>
+    <string name="flavor">Sabor</string>
+    <string name="pickup_date">Fecha de retiro</string>
+
+    <string name="subtotal_price">Subtotal %s</string>
+    <string name="total_price">Total %s</string>
+
+    <string name="new_cupcake_order">Nuevo pedido de galletas</string>
+
+    <string name="order_details">
+        Cantidad: %1$s \n
+        Sabor: %2$s \n
+        Fecha de retiro: %3$s \n
+        Total: %4$s \n\n
+        ¡Gracias!
+    </string>
+
+    <string name="back_button">Atrás</string>
+
+    <plurals name="cupcakes">
+        <item quantity="one">%d galleta</item>
+        <item quantity="other">%d galletas</item>
+    </plurals>
+</resources>

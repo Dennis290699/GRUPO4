@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_name">Biscuits</string>
+    <string name="order_cupcakes">Commander des biscuits</string>
+    <string name="one_cupcake">Un biscuit</string>
+    <string name="six_cupcakes">Six biscuits</string>
+    <string name="twelve_cupcakes">Douze biscuits</string>
+
+    <string name="choose_flavor">Choisir la saveur</string>
+
+    <string name="vanilla">Vanille avec pépites</string>
+    <string name="chocolate">Pépites de chocolat</string>
+    <string name="red_velvet">Double chocolat</string>
+    <string name="salted_caramel">Avoine et raisins secs</string>
+    <string name="coffee">Biscuit au beurre</string>
+    <string name="special_flavor">Édition spéciale</string>
+
+    <string name="cancel">Annuler</string>
+    <string name="next">Suivant</string>
+
+    <string name="choose_pickup_date">Choisir la date de retrait</string>
+    <string name="order_summary">Résumé de la commande</string>
+    <string name="send">Envoyer la commande à une autre application</string>
+
+    <string name="quantity">Quantité</string>
+    <string name="flavor">Saveur</string>
+    <string name="pickup_date">Date de retrait</string>
+
+    <string name="subtotal_price">Sous-total %s</string>
+    <string name="total_price">Total %s</string>
+
+    <string name="new_cupcake_order">Nouvelle commande de biscuits</string>
+
+    <string name="order_details">
+        Quantité : %1$s \n
+        Saveur : %2$s \n
+        Date de retrait : %3$s \n
+        Total : %4$s \n\n
+        Merci !
+    </string>
+
+    <string name="back_button">Retour</string>
+
+    <plurals name="cupcakes">
+        <item quantity="one">%d biscuit</item>
+        <item quantity="other">%d biscuits</item>
+    </plurals>
+</resources>
