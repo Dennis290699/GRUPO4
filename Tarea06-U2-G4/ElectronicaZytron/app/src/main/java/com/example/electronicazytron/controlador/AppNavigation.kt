@@ -2,12 +2,10 @@ package com.example.electronicazytron.controlador
 
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.electronicazytron.modelo.Usuario
-import com.example.electronicazytron.modelo.UsuarioRepository
 import com.example.electronicazytron.vistas.LoginScreen
 import com.example.electronicazytron.vistas.ProductScreen
 
@@ -46,14 +44,20 @@ fun AppNavigation() {
         composable("login") {
             LoginScreen { nombre, apellido ->
                 val usuario = Usuario(nombre, apellido)
-                if (usuarioViewModel.validar(usuario)) {
-                    productoViewModel.cargarProductos() // cargar productos antes de navegar
+                val valido = usuarioViewModel.validar(usuario)
+
+                if (valido) {
+                    productoViewModel.cargarProductos()
                     navController.navigate("productos") {
                         popUpTo("login") { inclusive = true }
                     }
                 }
+
+                valido
             }
         }
+
+
 
         composable("productos") {
             ProductScreen(productoViewModel, navController)

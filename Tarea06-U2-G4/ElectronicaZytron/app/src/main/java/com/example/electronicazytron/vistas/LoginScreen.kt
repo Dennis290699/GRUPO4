@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(
-    onValidar: (String, String) -> Unit
+    onValidar: (String, String) -> Boolean
 ) {
     Scaffold {
         LoginContent(onValidar)
@@ -27,10 +27,14 @@ fun LoginScreen(
 
 @Composable
 private fun LoginContent(
-    onValidar: (String, String) -> Unit
+    onValidar: (String, String) -> Boolean
 ) {
     var nombre by remember { mutableStateOf("") }
     var apellido by remember { mutableStateOf("") }
+
+    // 🔹 Estados del Alert
+    var showDialog by remember { mutableStateOf(false) }
+    var mensajeDialog by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -82,7 +86,15 @@ private fun LoginContent(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        onValidar(nombre, apellido)
+                        val esValido = onValidar(nombre, apellido)
+
+                        mensajeDialog = if (esValido) {
+                            "✅ Credenciales correctas"
+                        } else {
+                            "❌ Nombre o apellido incorrectos"
+                        }
+
+                        showDialog = true
                     }
                 ) {
                     Text("Ingresar")
@@ -90,12 +102,26 @@ private fun LoginContent(
             }
         }
     }
+
+    // 🔔 ALERT DIALOG
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Resultado") },
+            text = { Text(mensajeDialog) },
+            confirmButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("Aceptar")
+                }
+            }
+        )
+    }
 }
 
 @Preview(showSystemUi = true)
 @Composable
 fun LoginScreenPreview() {
     MaterialTheme {
-        LoginScreen { _, _ -> }
+        LoginScreen { _, _ -> true }
     }
 }
