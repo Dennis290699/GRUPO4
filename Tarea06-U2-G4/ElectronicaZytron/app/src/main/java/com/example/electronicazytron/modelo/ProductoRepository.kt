@@ -1,6 +1,9 @@
 package com.example.electronicazytron.modelo
-
+//clase producto usada para implementar las diferentes acciones que puede realizar el objeto
+//en este caso esta la inicializaicion de la lista de objetos y el crud del objeto
 class ProductoRepository {
+//usando mutableListOf se puede crear listas dinamicas las cuales pueden ser modificadas y almacenar el estado de la lista
+    // optimizando la vista en tiempo real de la lista, evita que se tenga que crear metodos auxiliares para refrescar pantallas que contengan la lista implementada
     private val productos = mutableListOf(
         Producto(
             codigo = "P001",
@@ -49,14 +52,16 @@ class ProductoRepository {
     fun agregar(producto: Producto){
         productos.add(producto)
     }
+    //funcion para listar los productos
     fun listar(): List<Producto>{
         return  productos;
     }
-
+    //funcion para buscar el producto, se usa el metodo find seguido de it el cual recorre la lista de productos y el atributo a buscar
     fun find(codigo: String): Producto?{
         return productos.find{it.codigo==codigo}
     }
-
+    //metodo para modificar una lista, como estan haciendo referencia a la misma lista es posible unicamente modificar el objeto encontrado
+    //y se actualiza automaticamente en la lista generada
     fun update(codigo: String,producto: Producto){
         var obj = find(codigo)
         if (obj!=null){
@@ -65,16 +70,13 @@ class ProductoRepository {
             obj.descripcion=producto.descripcion
             obj.fecha_fab=producto.fecha_fab
         }
-        println("Lista actualizada de productos:")
-        productos.forEach { p ->
-            println("${p.codigo} - ${p.descripcion} - $${p.costo} - Stock: ${p.disponibilidad} - Fecha: ${p.fecha_fab}")
-        }
     }
+    //metodo para eliminar un elemento de la lista
     fun delete(codigo: String) {
         val producto = productos.find { it.codigo == codigo}
         if (producto!=null){
             productos.remove(producto)
         }
     }
-
+    //aqui se puede agregar los metodos que un producto puede hacer, o mas extenciones del crud del producto
 }

@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ElectronicaZytronTheme {
-                AppNavigation()
+                AppNavigation() //Inicializacion de la navegacion, en esta se define la pantalla inicial
                 }
             }
         }

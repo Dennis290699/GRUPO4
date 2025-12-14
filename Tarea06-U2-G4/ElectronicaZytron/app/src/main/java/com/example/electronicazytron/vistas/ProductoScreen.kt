@@ -38,8 +38,9 @@ import com.example.electronicazytron.modelo.Producto
 @Composable
 fun ProductScreen(productoViewModel: ProductoViewModel = viewModel(),
                   navController: NavController) {
-    // Cargar productos al entrar a la pantalla
-    LaunchedEffect(Unit) {
+    // Cargar productos al entrar a la pantalla, usando el modelo de productos, asi tenemos cargados los productos para poder visualizarlos y usarlos
+    LaunchedEffect(Unit) { //launchedEfect para manejo de corrutinas dentro de jetpackcompiose
+                                    //unit hace que el metodo se ejecute una sola vez cuando se compone la vista
         productoViewModel.cargarProductos()
     }
 
@@ -50,7 +51,7 @@ fun ProductScreen(productoViewModel: ProductoViewModel = viewModel(),
 
 @Composable
 fun BodyContent(productoViewModel: ProductoViewModel,navController: NavController) {
-    val productos = productoViewModel.productos
+    val productos = productoViewModel.productos //retorna la lista de productos
     ProductList(productos,navController,productoViewModel)
 }
 
@@ -58,6 +59,7 @@ fun BodyContent(productoViewModel: ProductoViewModel,navController: NavControlle
 fun ProductList(productos: List<Producto>,navController: NavController,productoViewModel: ProductoViewModel) {
 
     Column(modifier = Modifier.fillMaxSize()) {
+        //botonera de productos el cual contiene insertar producto y salir que redirige a la pantalla de login
         Row(
             modifier = Modifier.fillMaxWidth().padding(top = 40.dp),
             horizontalArrangement = Arrangement.Center,
@@ -67,30 +69,38 @@ fun ProductList(productos: List<Producto>,navController: NavController,productoV
 
             Button(onClick = {
                 navController.navigate("login") {
-                    popUpTo(0) { inclusive = true } // borra todo el back stack
+                    popUpTo(0) { inclusive = true } // borra todo el back stack y evita errores de regresion de pantalla
                     launchSingleTop = true          // evita duplicar login
                 }
             }) { Text("Salir") }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
-
+        //lazyColumn usada para representar listas de objetos, la caracteristica de este componente es que carga aquellos elementos que son visibles para el
+        //usuario y el resto de elementos los deja en espera, optimizando el consumo de memoria
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            //items es un metodo similar a for each usado para iterar la lista de productos y poder acceder a los atributos individuales de cada objeto
             items(productos) { producto ->
-                var expanded by remember { mutableStateOf(false) }
+                var expanded by remember { mutableStateOf(false) } //metodo lamba de cual indica que por cada producto en la lista va a generar una variable
+                                                                            //mutable la cual nos indicara si un elemento esta expandido o unicamente se observan las
+                                                                            // primeras dos lineas
 
                 Column(
                     modifier = Modifier
-                        .clickable { expanded = !expanded }
+                        .clickable { expanded = !expanded } //a la columna se le agrega el modificador clickable el cual es usado para poder detectar clics sobre elementos
+                                                            //de la columna en caso de que se de un toque la variable del producto cambia a verdadero y da una descripcion
+                                                            //mas detallada
                         .padding(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    //muestra los dos primeros elementos, el codigo de producto y la descripcion del producto
                     Text(text = "${producto.codigo}")
                     Text(text = "${producto.descripcion}")
 
+                    //en caso de que la variable del objeto listado cambie se despliega y se puede observar las demas caracteristicas del producto
                     if (expanded) {
                         Text(text = "$${producto.costo}")
                         Text(text = "Stock: ${producto.disponibilidad}")
@@ -102,6 +112,8 @@ fun ProductList(productos: List<Producto>,navController: NavController,productoV
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Button(onClick = {
+                            //navController con una ruta con parametros usado para enviar el codigo del producto a la siguiente vista y esta pueda
+                            //tener al objeto del cual se hace referencia, toda esta definicion se encuentra en el archivo navController
                             navController.navigate("updateProduct/${producto.codigo}") }) { Text("Modificar") }
                         Spacer(modifier = Modifier.width(8.dp))
                         Button(onClick = {
