@@ -8,7 +8,7 @@ class UsuarioRepository {
     private var usuarios = mutableListOf<Usuario>(
         Usuario("Byron","Condolo"),
         Usuario("Pamela","Fernandez"),
-        Usuario("Marielena","Gonzales"),
+        Usuario("Marielena","Gonzalez"),
         Usuario("Angelo","Lascano"),
         Usuario("Ruth","Rosero"),
         Usuario("Joan","Santamaria"),
