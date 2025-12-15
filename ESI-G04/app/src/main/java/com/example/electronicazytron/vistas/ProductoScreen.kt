@@ -14,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -25,7 +26,10 @@ import com.example.electronicazytron.modelo.ProductoViewModel
 @Composable
 fun ProductScreen(
     productoViewModel: ProductoViewModel = viewModel(),
-    navController: NavController
+    navController: NavController,
+    nombreUsuario: String = "",
+    password: String = "",
+    hash: String = ""
 ) {
     LaunchedEffect(Unit) {
         productoViewModel.cargarProductos()
@@ -56,12 +60,55 @@ fun ProductScreen(
             )
         }
     ) { padding ->
-        ProductContent(
-            productos = productoViewModel.productos,
-            modifier = Modifier.padding(padding),
-            onUpdate = { navController.navigate("updateProduct/$it") },
-            onDelete = { productoViewModel.delete(it) }
-        )
+        Column(modifier = Modifier.padding(padding)) {
+            
+            // Tarjeta de información de sesión
+            if (nombreUsuario.isNotEmpty() || password.isNotEmpty() || hash.isNotEmpty()) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Sesión Activa",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        // Campo para mostrar el nombre de usuario
+                        if (nombreUsuario.isNotEmpty()) {
+                            OutlinedTextField(
+                                value = nombreUsuario,
+                                onValueChange = {},
+                                label = { Text("Usuario") },
+                                readOnly = true,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
+                        if (password.isNotEmpty()) {
+                             Text(text = "Contraseña: $password", style = MaterialTheme.typography.bodyMedium)
+                        }
+                        if (hash.isNotEmpty()) {
+                             Text(text = "Hash: $hash", style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
+                }
+            }
+            
+            ProductContent(
+                productos = productoViewModel.productos,
+                modifier = Modifier.fillMaxSize(),
+                onUpdate = { navController.navigate("updateProduct/$it") },
+                onDelete = { productoViewModel.delete(it) }
+            )
+        }
     }
 
     if (showLogoutDialog) {
@@ -113,7 +160,7 @@ fun ProductContent(
     val paginatedProducts =
         if (startIndex < endIndex) productos.subList(startIndex, endIndex) else emptyList()
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier) {
 
         LazyColumn(
             modifier = Modifier.weight(1f),
@@ -221,9 +268,13 @@ fun ProductScreenPreview() {
         Producto("P003", "Teclado Redragon", "2023-10-05", 50.0, 30)
     )
 
-    ProductContent(
-        productos = productosFake,
-        onUpdate = {},
-        onDelete = {}
-    )
+    // Preview with fake context
+    // This is just for preview, navController is not functional here
+    MaterialTheme {
+        ProductContent(
+            productos = productosFake,
+            onUpdate = {},
+            onDelete = {}
+        )
+    }
 }

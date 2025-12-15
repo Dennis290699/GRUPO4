@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.electronicazytron.modelo.Usuario
 import com.example.electronicazytron.vistas.LoginScreen
 import com.example.electronicazytron.vistas.ProductScreen
@@ -18,6 +19,7 @@ import com.example.electronicazytron.vista.InsertProductScreen
 import com.example.electronicazytron.vistas.HomeScreen
 import com.example.electronicazytron.vistas.RegistrarScreen
 import com.example.electronicazytron.vistas.UpdateProductScreen
+import java.security.MessageDigest
 
 @Composable
 fun AppNavigation() {
@@ -42,13 +44,14 @@ fun AppNavigation() {
         }
 
         composable("login") {
-            LoginScreen { nombre, apellido ->
+            LoginScreen { nombre, apellido, password ->
                 val usuario = Usuario(nombre, apellido)
                 val valido = usuarioViewModel.validar(usuario)
 
                 if (valido) {
-                    productoViewModel.cargarProductos()
-                    navController.navigate("productos") {
+                    val hash = hashString(password)
+                    // Navegar a productos pasando nombre, password y hash
+                    navController.navigate("productos?nombre=$nombre&password=$password&hash=$hash") {
                         popUpTo("login") { inclusive = true }
                     }
                 }
@@ -57,10 +60,18 @@ fun AppNavigation() {
             }
         }
 
-
-
-        composable("productos") {
-            ProductScreen(productoViewModel, navController)
+        composable(
+            route = "productos?nombre={nombre}&password={password}&hash={hash}",
+            arguments = listOf(
+                navArgument("nombre") { defaultValue = "" },
+                navArgument("password") { defaultValue = "" },
+                navArgument("hash") { defaultValue = "" }
+            )
+        ) { backStackEntry ->
+            val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
+            val password = backStackEntry.arguments?.getString("password") ?: ""
+            val hash = backStackEntry.arguments?.getString("hash") ?: ""
+            ProductScreen(productoViewModel, navController, nombre, password, hash)
         }
 
         composable("updateProduct/{codigo}") { backStackEntry ->
@@ -79,4 +90,9 @@ fun AppNavigation() {
         }
 
     }
+}
+
+fun hashString(input: String): String {
+    val bytes = MessageDigest.getInstance("SHA-256").digest(input.toByteArray())
+    return bytes.joinToString("") { "%02x".format(it) }
 }
