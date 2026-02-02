@@ -60,12 +60,19 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             isUploading = true
             try {
-                // Ejecutamos la simulación (para cumplir con el requisito del delay)
-                CameraUtils.uploadImageSimulated(file)
+                // Mostrar inmediatamente la ruta local para previsualizar mientras sube
+                updateImagenUri("file://${file.absolutePath}")
 
-                // IMPORTANTE: Guardamos la ruta absoluta del archivo local.
-                // Esto permite que Coil encuentre la imagen en la memoria del celular.
-                updateImagenUri(file.absolutePath)
+                // Intentamos subir a Cloudinary (si CloudinaryConfig está configurado)
+                val uploadedUrl = try {
+                    CameraUtils.uploadImageToCloudinary(file)
+                } catch (e: Exception) {
+                    // Si falla la subida remota, usamos el fallback local
+                    CameraUtils.uploadImageSimulated(file)
+                }
+
+                // Reemplazamos la URI local por la URL remota (si corresponde)
+                updateImagenUri(uploadedUrl)
 
             } catch (e: Exception) {
                 // Fallback en caso de error

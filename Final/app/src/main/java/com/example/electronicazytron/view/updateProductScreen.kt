@@ -279,8 +279,15 @@ fun UpdateProductScreen(
 
                     Button(
                         modifier = Modifier.weight(1f),
-                        onClick = { showConfirmDialog = true }
-                    ) { Text("Actualizar") }
+                        onClick = { showConfirmDialog = true },
+                        enabled = !productoViewModel.isUploading
+                    ) {
+                        if (productoViewModel.isUploading) {
+                            CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                        } else {
+                            Text("Actualizar")
+                        }
+                    }
                 }
             }
         }
@@ -293,6 +300,10 @@ fun UpdateProductScreen(
             text = { Text("¿Deseas guardar los cambios del producto?") },
             confirmButton = {
                 Button(onClick = {
+                    // Si el ViewModel tiene una imagen cargada (remota o local), la usamos;
+                    // en caso contrario usamos el valor actual del campo `imagenUri`.
+                    val finalImagen = productoViewModel.imagenUriState.takeIf { it.isNotEmpty() } ?: imagenUri.trim()
+
                     productoViewModel.update(
                         Producto(
                             codigo = prod.codigo,
@@ -300,7 +311,7 @@ fun UpdateProductScreen(
                             fecha_fab = fechaFab,
                             costo = costo.toDoubleOrNull() ?: 0.0,
                             disponibilidad = disponibilidad.toIntOrNull() ?: 0,
-                            imagenUri = imagenUri.trim(),
+                            imagenUri = finalImagen,
                             eliminado = prod.eliminado
                         )
                     )
