@@ -1,21 +1,3 @@
-# Documentación de Funcionalidad de Cámara - App Productos
-
-## 1. Cambios en Configuración
-- **AndroidManifest.xml**: Se añadieron permisos de `CAMERA`, `READ_EXTERNAL_STORAGE` y `WRITE_EXTERNAL_STORAGE`. Se configuró el `FileProvider` para evitar errores de exposición de URI (`FileUriExposedException`).
-- **file_paths.xml**: Se habilitó el acceso a `external-files-path` para persistir las imágenes en la carpeta física del dispositivo de forma segura.
-
-## 2. Componentes y Lógica de Imagen
-- **CameraUtils.kt**: Centraliza la creación de archivos temporales y la simulación de subida a la nube.
-- **Visualización Local**: Se ajustó el `ProductViewModel` para que, tras la captura, se utilice la ruta del archivo. Esto garantiza que la imagen sea visible en la App inmediatamente mediante Coil.
-
-## 3. Integración MVVM
-- **ProductViewModel**: 
-    - `imagenUriState`: Almacena el path o URL actual de la imagen capturada.
-    - `uploadImage()`: Ejecuta la lógica de subida y actualiza el estado para que la View (`InsertProductScreen`) refresque la interfaz.
-- **Room Persistence**: El campo `imagenUri` en la entidad `Producto` guarda el String resultante, permitiendo que la imagen persista localmente.
-
----
-
 ## CUMPLIMIENTO DE REQUERIMIENTOS
 
 ### 1. Crear permisos a cámara y almacenamiento interno del dispositivo
