@@ -7,6 +7,6 @@ package com.example.electronicazytron.utils
  */
 object CloudinaryConfig {
     // TODO: Reemplaza con tus valores reales antes de compilar
-    const val CLOUD_NAME = "dbqkgvl2o"
-    const val UPLOAD_PRESET = "DiposPrueba"
+    const val CLOUD_NAME = "ddbsxd78t"
+    const val UPLOAD_PRESET = "Imagenes_Zitron"
 }
