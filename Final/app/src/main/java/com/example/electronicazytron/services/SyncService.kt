@@ -1,9 +1,18 @@
 package com.example.electronicazytron.services
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
+import android.Manifest
+import android.content.pm.PackageManager
 import aws.sdk.kotlin.services.dynamodb.DynamoDbClient
 import aws.sdk.kotlin.services.dynamodb.model.AttributeValue
 import aws.sdk.kotlin.services.dynamodb.putItem
@@ -26,6 +35,12 @@ class SyncService : Service() {
     private val TAG = "SyncService_Debug"
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(serviceJob + Dispatchers.IO)
+
+    companion object {
+        const val CHANNEL_ID = "sync_channel"
+        const val CHANNEL_NAME = "Sincronización"
+        const val NOTIFICATION_ID = 1001
+    }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -57,6 +72,9 @@ class SyncService : Service() {
                     descargarUsuariosDesdeNube(db.userDao(), dynamoDbClient)
 
                     Log.i(TAG, "Proceso de sincronización completado con éxito.")
+
+                    // Contar productos locales y notificar al usuario
+                    notificarSincronizacion(db.productoDao())
                 } catch (e: Exception) {
                     Log.e(TAG, "Error crítico en sincronización: ${e.message}", e)
                 }
@@ -68,13 +86,81 @@ class SyncService : Service() {
         return START_NOT_STICKY
     }
 
+    /**
+     * Notifica al usuario que la sincronización se completó con el número de productos
+     */
+    private suspend fun notificarSincronizacion(productoDao: ProductoDao) {
+        try {
+            // Contar productos en la base de datos local
+            val productCount = productoDao.count()
+            Log.i(TAG, "Intentando notificar: $productCount productos en BD local")
+
+            // Crear canal de notificación
+            ensureNotificationChannel(applicationContext)
+
+            // Construir la notificación
+            val title = "Sincronización Completada"
+            val message = "Se han sincronizado $productCount productos"
+            
+            Log.i(TAG, "Construyendo notificación: $title - $message")
+
+            val builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setStyle(NotificationCompat.BigTextStyle().bigText("Base de datos local contiene $productCount productos sincronizados"))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true)
+                .setVibrate(longArrayOf(0, 500))
+
+            // Verificar permisos antes de mostrar la notificación (Android 13+)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(
+                        applicationContext,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    NotificationManagerCompat.from(applicationContext)
+                        .notify(NOTIFICATION_ID, builder.build())
+                    Log.i(TAG, "Notificación enviada exitosamente con $productCount productos")
+                } else {
+                    Log.w(TAG, "Permiso POST_NOTIFICATIONS no concedido. Notificación no mostrada.")
+                }
+            } else {
+                // Android < 13, no requiere permiso en tiempo de ejecución
+                NotificationManagerCompat.from(applicationContext)
+                    .notify(NOTIFICATION_ID, builder.build())
+                Log.i(TAG, "Notificación enviada exitosamente (Android < 13) con $productCount productos")
+            }
+        } catch (ex: Exception) {
+            Log.e(TAG, "Error al notificar sincronización: ${ex.message}", ex)
+            ex.printStackTrace()
+        }
+    }
+
+    private fun ensureNotificationChannel(context: Context) {
+        try {
+            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT)
+                manager.createNotificationChannel(channel)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error creando canal de notificación: ${e.message}")
+        }
+    }
+
     // --- OPERACIÓN: CREATE / UPDATE ---
     private suspend fun syncProductos(productoDao: ProductoDao, dynamoDbClient: DynamoDbClient) {
-        val unsyncedProducts = productoDao.getUnsynced()
-        if (unsyncedProducts.isEmpty()) return
+        // Subir TODOS los productos locales (no eliminados)
+        val allProducts = productoDao.listar()
+        Log.i(TAG, "Subiendo producto")
+        if (allProducts.isEmpty()) return
 
-        for (producto in unsyncedProducts) {
+        for (producto in allProducts) {
             try {
+                Log.i(TAG, "PutItem")
+                Log.i(TAG, "Insertando en DynamoDB: ${producto.codigo}")
                 val itemValues = mapOf(
                     "codigo" to AttributeValue.S(producto.codigo),
                     "descripcion" to AttributeValue.S(producto.descripcion),
@@ -90,10 +176,10 @@ class SyncService : Service() {
                     tableName = "productos"
                     item = itemValues
                 }
-
                 producto.isSynced = true
                 productoDao.actualizar(producto)
                 Log.i(TAG, "Producto '${producto.codigo}' sincronizado (Upsert).")
+                Log.i(TAG, "Upload finalizado: ${producto.codigo}")
             } catch (e: Exception) {
                 Log.e(TAG, "Error al subir '${producto.codigo}': ${e.message}")
             }
@@ -147,9 +233,13 @@ class SyncService : Service() {
     }
 
     private suspend fun syncUsers(userDao: UserDao, dynamoDbClient: DynamoDbClient) {
-        val unsyncedUsers = userDao.getUnsynced()
-        for (user in unsyncedUsers) {
+        // Subir TODOS los usuarios locales
+        val allUsers = userDao.listar()
+        if (allUsers.isNotEmpty()) Log.i(TAG, "Subiendo usuario")
+        for (user in allUsers) {
             try {
+                Log.i(TAG, "PutItem")
+                Log.i(TAG, "Insertando en DynamoDB: user id=${user.id}")
                 dynamoDbClient.putItem {
                     tableName = "users"
                     item = mapOf(
@@ -161,6 +251,7 @@ class SyncService : Service() {
                 }
                 user.isSynced = true
                 userDao.update(user)
+                Log.i(TAG, "Upload finalizado: user id=${user.id}")
             } catch (e: Exception) {
                 Log.e(TAG, "Error al sincronizar usuario: ${e.message}")
             }

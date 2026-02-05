@@ -1,5 +1,12 @@
 package com.example.electronicazytron.view
 import coil.compose.AsyncImage
+import android.Manifest
+import android.content.pm.PackageManager
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.layout.ContentScale
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
@@ -32,8 +39,31 @@ fun ProductScreen(
     password: String = "",
     hash: String = ""
 ) {
+    val context = LocalContext.current
+
+    // Request POST_NOTIFICATIONS permission on Android 13+ once
+    var askedForNotifications by remember { mutableStateOf(false) }
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        Log.i("ProductScreen", "POST_NOTIFICATIONS granted: $isGranted")
+    }
+
     LaunchedEffect(Unit) {
         productoViewModel.cargarProductos()
+
+        if (!askedForNotifications && android.os.Build.VERSION.SDK_INT >= 33) {
+            val granted = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (!granted) {
+                // launch permission prompt
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                askedForNotifications = true
+            }
+        }
     }
 
     var showLogoutDialog by remember { mutableStateOf(false) }

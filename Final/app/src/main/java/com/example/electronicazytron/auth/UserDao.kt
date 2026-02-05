@@ -19,6 +19,10 @@ interface UserDao {
     @Query("SELECT * FROM users ORDER BY nombre ASC")
     fun getAllUsers(): Flow<List<User>>
 
+    // Devuelve la lista completa de usuarios (sin Flow) para sincronización puntual
+    @Query("SELECT * FROM users ORDER BY nombre ASC")
+    suspend fun listar(): List<User>
+
     @Query("SELECT * FROM users WHERE nombre = :nombre LIMIT 1")
     suspend fun buscarPorNombre(nombre: String): User?
 

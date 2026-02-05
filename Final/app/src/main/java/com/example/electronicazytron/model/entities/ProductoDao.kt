@@ -25,7 +25,7 @@ interface ProductoDao{
     @Query("UPDATE productos SET eliminado = 1, isSynced = 0 WHERE codigo = :codigo")
     suspend fun marcarEliminadoNoSincronizado(codigo: String)
 
-    @Query("SELECT COUNT(*) FROM productos")
+    @Query("SELECT COUNT(*) FROM productos WHERE eliminado=0")
     suspend fun count(): Int
 
     // --- Nuevo metodo para la sincronizacion

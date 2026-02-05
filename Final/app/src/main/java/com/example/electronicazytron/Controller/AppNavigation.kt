@@ -15,6 +15,9 @@ import com.example.electronicazytron.view.UpdateProductScreen
 import com.example.electronicazytron.view.InsertProductScreen
 import com.example.electronicazytron.vistas.*
 import kotlinx.coroutines.delay
+import androidx.compose.ui.platform.LocalContext
+import android.content.Intent
+import com.example.electronicazytron.services.SyncService
 
 @Composable
 fun AppNavigation() {
@@ -88,6 +91,7 @@ fun AppNavigation() {
 
         composable("login") {
             SessionManager.tocarPantalla()
+            val context = LocalContext.current
             LoginScreen(
                 onValidar = { nombre, password, onResult ->
                     usuarioViewModel.validar(nombre, password) { esValido ->
@@ -96,6 +100,13 @@ fun AppNavigation() {
                             // IMPORTANTE: Aquí inicia el reloj de los 15 minutos
                             SessionManager.iniciarSesion()
                             productoViewModel.cargarProductos()
+                            // Iniciar servicio de sincronización (SyncService)
+                            try {
+                                val intent = Intent(context, SyncService::class.java)
+                                context.startService(intent)
+                            } catch (e: Exception) {
+                                // Ignorar si no se puede iniciar el servicio en este entorno
+                            }
                             navController.navigate("productos") {
                                 popUpTo("home") { inclusive = false }
                             }

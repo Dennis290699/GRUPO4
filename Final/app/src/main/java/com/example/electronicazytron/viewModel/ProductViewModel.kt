@@ -11,6 +11,8 @@ import com.example.electronicazytron.model.entities.Producto
 import com.example.electronicazytron.model.repository.ProductoRepository
 import com.example.electronicazytron.auth.AppDatabase
 import com.example.electronicazytron.utils.CameraUtils
+import android.content.Intent
+import com.example.electronicazytron.services.SyncService
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -93,6 +95,13 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             repository.update(producto)
             refrescar()
+            // Intentar disparar sincronización en segundo plano
+            try {
+                val intent = Intent(getApplication(), SyncService::class.java)
+                getApplication<Application>().startService(intent)
+            } catch (e: Exception) {
+                // ignore
+            }
         }
     }
 
@@ -100,6 +109,12 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             repository.softDelete(codigo)
             refrescar()
+            try {
+                val intent = Intent(getApplication(), SyncService::class.java)
+                getApplication<Application>().startService(intent)
+            } catch (e: Exception) {
+                // ignore
+            }
         }
     }
 
@@ -115,6 +130,11 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
             // Limpiamos el estado después de una inserción exitosa
             imagenUriState = ""
             refrescar()
+            try {
+                val intent = Intent(getApplication(), SyncService::class.java)
+                getApplication<Application>().startService(intent)
+            } catch (e: Exception) {
+            }
         }
     }
 }
